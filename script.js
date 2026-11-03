@@ -5,15 +5,51 @@
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
   const now = () => new Date().toISOString();
   const uid = (prefix='ID') => `${prefix}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+  const workflowStatuses = ['Draft','In Progress','Pending Approval','Pending Signature','Completed','Cancelled'];
+  const workflowOwners = ['Jordan Davis','Priya Patel','Sarah Chen','Michael Ross','Ava Thompson','Liam Chen'];
+  const workflowCounterparties = ['Vertex Systems','CloudScale Inc.','Horizon Labs','Brightline Creative','Nexus Advisory','Northwind Energy','Apex Logistics','Harbor Retail','Summit Health','Redwood Financial','BluePeak Consulting','MetroOne Telecom','Atlas Manufacturing','Cinder Software','SignalWorks','Mercury Exchange','Northstar Foods','Prime Legal Group','Stonebridge Ventures','Evergreen Bio','Aster Labs','Beacon AI','Velora Commerce','Cascade Mobility','Fjord Security','Open Harbor'];
+  const workflowTypes = ['Master Services Agreement','SaaS Agreement','NDA','Statement of Work','Data Processing Addendum','Consulting Agreement','Technology Services Agreement','Vendor Supply Agreement','Employment Offer Letter','License Agreement'];
+  const workflowBase = [
+    {id:'WF-24081',name:'Master Services Agreement — Acme / Vertex',counterparty:'Vertex Systems',type:'Master Services Agreement',status:'Pending Approval',owner:'Jordan Davis',updated:'Today, 10:42 AM',progress:65,starred:true,contractId:'CTR-1001',email:'wf-24081@northstar.acme.com',approvers:[{name:'Sarah Chen',email:'sarah.chen@acme.com',role:'Legal'},{name:'Michael Ross',email:'m.ross@acme.com',role:'Finance'}],signers:[{name:'Jordan Davis',email:'jordan.davis@acme.com',role:'Acme'},{name:'Alex Morgan',email:'alex@vertex.io',role:'Counterparty'}],documents:['MSA_v3.docx','Security_Addendum.pdf']},
+    {id:'WF-24079',name:'Enterprise SaaS Subscription',counterparty:'CloudScale Inc.',type:'SaaS Agreement',status:'Pending Signature',owner:'Jordan Davis',updated:'Yesterday',progress:90,starred:false,contractId:'CTR-1002',email:'wf-24079@northstar.acme.com',approvers:[],signers:[],documents:['SaaS_Subscription.pdf']},
+    {id:'WF-24076',name:'NDA — Horizon Labs',counterparty:'Horizon Labs',type:'NDA',status:'In Progress',owner:'Priya Patel',updated:'Oct 30, 2026',progress:42,starred:false,contractId:'CTR-1003',email:'wf-24076@northstar.acme.com',approvers:[],signers:[],documents:['Mutual_NDA.docx']},
+    {id:'WF-24072',name:'Marketing Services SOW',counterparty:'Brightline Creative',type:'Statement of Work',status:'Completed',owner:'Jordan Davis',updated:'Oct 28, 2026',progress:100,starred:true,contractId:'CTR-1004',email:'wf-24072@northstar.acme.com',approvers:[],signers:[],documents:['Marketing_SOW.pdf']},
+    {id:'WF-24068',name:'Data Processing Addendum',counterparty:'Vertex Systems',type:'Data Processing',status:'Draft',owner:'Jordan Davis',updated:'Oct 27, 2026',progress:12,starred:false,contractId:'CTR-1005',email:'wf-24068@northstar.acme.com',approvers:[],signers:[],documents:['DPA_draft.docx']},
+    {id:'WF-24063',name:'Consulting Agreement',counterparty:'Nexus Advisory',type:'Consulting',status:'Cancelled',owner:'Priya Patel',updated:'Oct 22, 2026',progress:0,starred:false,contractId:'CTR-1006',email:'wf-24063@northstar.acme.com',approvers:[],signers:[],documents:[]}
+  ];
+  const additionalWorkflows = Array.from({length:54}, (_, index) => {
+    const status = workflowStatuses[index % workflowStatuses.length];
+    const owner = workflowOwners[index % workflowOwners.length];
+    const counterparty = workflowCounterparties[(index + 3) % workflowCounterparties.length];
+    const type = workflowTypes[index % workflowTypes.length];
+    const progressByStatus = {Draft:10,'In Progress':35,'Pending Approval':65,'Pending Signature':85,Completed:100,Cancelled:0};
+    const sequence = index + 7;
+    const updatedDate = new Date(Date.now() - ((index * 13) % 192) * 60 * 60 * 1000).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+    return {
+      id:`WF-${(24060 + sequence).toString()}`,
+      name:`${type} — Acme / ${counterparty}`,
+      counterparty,
+      type,
+      status,
+      owner,
+      updated: updatedDate,
+      progress: progressByStatus[status],
+      starred: index % 4 === 0,
+      contractId:`CTR-${(1007 + sequence)}`,
+      email:`wf-${(24060 + sequence).toString()}@northstar.acme.com`,
+      approvers: [
+        {name:'Sarah Chen',email:'sarah.chen@acme.com',role:'Legal'},
+        ...(index % 2 === 0 ? [{name:'Michael Ross',email:'m.ross@acme.com',role:'Finance'}] : [])
+      ],
+      signers:[
+        {name:owner,email:`${owner.toLowerCase().replace(/\s+/g,'.')}@acme.com`,role:'Acme'},
+        {name:counterparty.split(' ')[0] + ' Representative',email:`${counterparty.toLowerCase().replace(/\s+/g,'.')}@${counterparty.toLowerCase().replace(/\s+/g,'')}.com`,role:'Counterparty'}
+      ],
+      documents:[`Draft_${type.replace(/\s+/g,'_')}_${index + 1}.docx`, index % 3 === 0 ? 'Exhibit_A.pdf' : 'Signature_Packet.pdf']
+    };
+  });
   const seed = {
-    workflows:[
-      {id:'WF-24081',name:'Master Services Agreement — Acme / Vertex',counterparty:'Vertex Systems',type:'Master Services Agreement',status:'Pending Approval',owner:'Jordan Davis',updated:'Today, 10:42 AM',progress:65,starred:true,contractId:'CTR-1001',email:'wf-24081@northstar.acme.com',approvers:[{name:'Sarah Chen',email:'sarah.chen@acme.com',role:'Legal'},{name:'Michael Ross',email:'m.ross@acme.com',role:'Finance'}],signers:[{name:'Jordan Davis',email:'jordan.davis@acme.com',role:'Acme'},{name:'Alex Morgan',email:'alex@vertex.io',role:'Counterparty'}],documents:['MSA_v3.docx','Security_Addendum.pdf']},
-      {id:'WF-24079',name:'Enterprise SaaS Subscription',counterparty:'CloudScale Inc.',type:'SaaS Agreement',status:'Pending Signature',owner:'Jordan Davis',updated:'Yesterday',progress:90,starred:false,contractId:'CTR-1002',email:'wf-24079@northstar.acme.com',approvers:[],signers:[],documents:['SaaS_Subscription.pdf']},
-      {id:'WF-24076',name:'NDA — Horizon Labs',counterparty:'Horizon Labs',type:'NDA',status:'In Progress',owner:'Priya Patel',updated:'Oct 30, 2026',progress:42,starred:false,contractId:'CTR-1003',email:'wf-24076@northstar.acme.com',approvers:[],signers:[],documents:['Mutual_NDA.docx']},
-      {id:'WF-24072',name:'Marketing Services SOW',counterparty:'Brightline Creative',type:'Statement of Work',status:'Completed',owner:'Jordan Davis',updated:'Oct 28, 2026',progress:100,starred:true,contractId:'CTR-1004',email:'wf-24072@northstar.acme.com',approvers:[],signers:[],documents:['Marketing_SOW.pdf']},
-      {id:'WF-24068',name:'Data Processing Addendum',counterparty:'Vertex Systems',type:'Data Processing',status:'Draft',owner:'Jordan Davis',updated:'Oct 27, 2026',progress:12,starred:false,contractId:'CTR-1005',email:'wf-24068@northstar.acme.com',approvers:[],signers:[],documents:['DPA_draft.docx']},
-      {id:'WF-24063',name:'Consulting Agreement',counterparty:'Nexus Advisory',type:'Consulting',status:'Cancelled',owner:'Priya Patel',updated:'Oct 22, 2026',progress:0,starred:false,contractId:'CTR-1006',email:'wf-24063@northstar.acme.com',approvers:[],signers:[],documents:[]}
-    ],
+    workflows:[...workflowBase, ...additionalWorkflows],
     contracts:[
       {id:'CTR-1001',name:'Master Services Agreement',counterparty:'Vertex Systems',type:'Master Services Agreement',status:'In Negotiation',owner:'Jordan Davis',value:485000,currency:'USD',effective:'2026-11-01',expiry:'2028-10-31',department:'Technology',risk:'Medium',entity:'Acme Corporation',renewal:'Auto-renewal',workflow:'WF-24081',tags:['Strategic','Technology']},
       {id:'CTR-1002',name:'Enterprise SaaS Subscription',counterparty:'CloudScale Inc.',type:'SaaS Agreement',status:'Pending Signature',owner:'Jordan Davis',value:126000,currency:'USD',effective:'2026-10-15',expiry:'2027-10-14',department:'Technology',risk:'Low',entity:'Acme Corporation',renewal:'Manual',workflow:'WF-24079',tags:['Software']},
