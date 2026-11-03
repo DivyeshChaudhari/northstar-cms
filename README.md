@@ -33,31 +33,13 @@ This project is a static front-end application built with plain HTML, CSS, and J
 
 ## How to Run
 
-Because this is a static site, you can serve it locally with any simple web server.
+This is a plain HTML, CSS, and JavaScript application. To use it:
 
-### Option 1: Python
+1. Open the project folder.
+2. Double-click `index.html` in your file explorer, or open it in a browser.
+3. The application will run directly in the browser.
 
-From the project folder, run:
-
-```bash
-python -m http.server 8000
-```
-
-Then open:
-
-```text
-http://localhost:8000
-```
-
-### Option 2: Node.js
-
-If you prefer Node, you can also use a local static server such as `npx serve`:
-
-```bash
-npx serve .
-```
-
-Then open the local address shown in the terminal.
+No installation, package manager, or server setup is required.
 
 ## Notes
 
